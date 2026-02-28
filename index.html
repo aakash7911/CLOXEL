@@ -1,0 +1,1634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MoneyPrinter Turbo - AI Video Generator</title>
+    
+    <!-- React & ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    
+    <!-- Babel for JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Space Grotesk', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: '#6366f1',
+                        secondary: '#8b5cf6',
+                        accent: '#ec4899',
+                        dark: '#0f172a',
+                        darker: '#020617',
+                    },
+                    animation: {
+                        'gradient': 'gradient 8s linear infinite',
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'spin-slow': 'spin 3s linear infinite',
+                    },
+                    keyframes: {
+                        gradient: {
+                            '0%, 100%': { backgroundPosition: '0% 50%' },
+                            '50%': { backgroundPosition: '100% 50%' },
+                        },
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body {
+            background: #020617;
+            color: white;
+            overflow-x: hidden;
+        }
+        
+        .glass {
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .glass-card {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #ec4899 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .gradient-border {
+            position: relative;
+            background: rgba(15, 23, 42, 0.8);
+        }
+        
+        .gradient-border::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6, #ec4899);
+            border-radius: inherit;
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .gradient-border:hover::before {
+            opacity: 1;
+        }
+        
+        .mesh-bg {
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 0%, rgba(139, 92, 246, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(236, 72, 153, 0.15) 0px, transparent 50%),
+                radial-gradient(at 0% 100%, rgba(99, 102, 241, 0.15) 0px, transparent 50%);
+        }
+        
+        .shimmer {
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            background-size: 200% 100%;
+            animation: shimmer 2s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+        
+        .progress-ring {
+            transform: rotate(-90deg);
+        }
+        
+        .progress-ring-circle {
+            transition: stroke-dashoffset 0.35s;
+            transform-origin: 50% 50%;
+        }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #6366f1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #8b5cf6;
+        }
+        
+        .platform-checkbox:checked + div {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            border-color: transparent;
+        }
+        
+        .plan-card {
+            transition: all 0.3s ease;
+        }
+        
+        .plan-card:hover {
+            transform: translateY(-10px);
+        }
+        
+        .plan-card.featured {
+            border: 2px solid #6366f1;
+            transform: scale(1.05);
+        }
+        
+        .plan-card.featured:hover {
+            transform: scale(1.05) translateY(-10px);
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    
+    <script type="text/babel">
+        const { useState, useEffect, useRef, createContext, useContext } = React;
+        
+        // API Configuration
+        const API_URL = 'http://localhost:8000/api';
+        
+        // Auth Context
+        const AuthContext = createContext(null);
+        
+        const AuthProvider = ({ children }) => {
+            const [user, setUser] = useState(null);
+            const [loading, setLoading] = useState(true);
+            const [token, setToken] = useState(localStorage.getItem('token'));
+            
+            useEffect(() => {
+                if (token) {
+                    fetchUser();
+                } else {
+                    setLoading(false);
+                }
+            }, [token]);
+            
+            const fetchUser = async () => {
+                try {
+                    const res = await fetch(`${API_URL}/auth/me`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    const data = await res.json();
+                    if (data.success) {
+                        setUser(data.data);
+                    } else {
+                        logout();
+                    }
+                } catch (err) {
+                    logout();
+                }
+                setLoading(false);
+            };
+            
+            const login = async (credentials) => {
+                const res = await fetch(`${API_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(credentials)
+                });
+                const data = await res.json();
+                if (data.success) {
+                    localStorage.setItem('token', data.data.token);
+                    setToken(data.data.token);
+                    setUser(data.data.user);
+                    return { success: true };
+                }
+                return { success: false, error: data.error };
+            };
+            
+            const register = async (userData) => {
+                const res = await fetch(`${API_URL}/auth/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(userData)
+                });
+                const data = await res.json();
+                if (data.success) {
+                    localStorage.setItem('token', data.data.token);
+                    setToken(data.data.token);
+                    setUser(data.data.user);
+                    return { success: true };
+                }
+                return { success: false, error: data.error };
+            };
+            
+            const logout = () => {
+                localStorage.removeItem('token');
+                setToken(null);
+                setUser(null);
+            };
+            
+            return (
+                <AuthContext.Provider value={{ user, login, register, logout, loading, token }}>
+                    {children}
+                </AuthContext.Provider>
+            );
+        };
+        
+        const useAuth = () => useContext(AuthContext);
+        
+        // Icons Component
+        const Icon = ({ name, size = 24, className = "" }) => {
+            const iconRef = useRef(null);
+            
+            useEffect(() => {
+                if (iconRef.current) {
+                    iconRef.current.innerHTML = '';
+                    const icon = lucide.createElement(lucide.icons[name]);
+                    if (icon) {
+                        icon.setAttribute('width', size);
+                        icon.setAttribute('height', size);
+                        iconRef.current.appendChild(icon);
+                    }
+                }
+            }, [name, size]);
+            
+            return <span ref={iconRef} className={className} />;
+        };
+        
+        // Toast Notification
+        const Toast = ({ message, type, onClose }) => {
+            useEffect(() => {
+                const timer = setTimeout(onClose, 3000);
+                return () => clearTimeout(timer);
+            }, [onClose]);
+            
+            const colors = {
+                success: 'bg-green-500',
+                error: 'bg-red-500',
+                info: 'bg-blue-500'
+            };
+            
+            return (
+                <div className={`fixed top-4 right-4 z-50 ${colors[type]} text-white px-6 py-3 rounded-lg shadow-2xl flex items-center gap-3 animate-float`}>
+                    <Icon name={type === 'success' ? 'check-circle' : type === 'error' ? 'x-circle' : 'info'} size={20} />
+                    <span className="font-medium">{message}</span>
+                </div>
+            );
+        };
+        
+        // Login Page
+        const Login = ({ onToggle }) => {
+            const [form, setForm] = useState({ username: '', password: '' });
+            const [error, setError] = useState('');
+            const { login } = useAuth();
+            
+            const handleSubmit = async (e) => {
+                e.preventDefault();
+                const result = await login(form);
+                if (!result.success) setError(result.error);
+            };
+            
+            return (
+                <div className="min-h-screen flex items-center justify-center mesh-bg p-4">
+                    <div className="glass-card p-8 rounded-2xl w-full max-w-md relative overflow-hidden">
+                        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary via-secondary to-accent" />
+                        
+                        <div className="text-center mb-8">
+                            <div className="w-16 h-16 bg-gradient-to-br from-primary to-secondary rounded-xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-primary/30">
+                                <Icon name="zap" size={32} className="text-white" />
+                            </div>
+                            <h1 className="text-3xl font-display font-bold gradient-text mb-2">Welcome Back</h1>
+                            <p className="text-gray-400">Sign in to start printing money</p>
+                        </div>
+                        
+                        {error && (
+                            <div className="bg-red-500/10 border border-red-500/30 text-red-400 px-4 py-3 rounded-lg mb-4 flex items-center gap-2">
+                                <Icon name="alert-circle" size={18} />
+                                {error}
+                            </div>
+                        )}
+                        
+                        <form onSubmit={handleSubmit} className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-300 mb-2">Username or Email</label>
+                                <div className="relative">
+                                    <Icon name="user" size={20} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
+                                    <input
+                                        type="text"
+                                        value={form.username}
+                                        onChange={(e) => setForm({...form, username: e.target.value})}
+                                        className="w-full bg-dark/50 border border-gray-700 rounded-lg pl-10 pr-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+                                        placeholder="Enter your username"
+                                        required
+                                    />
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label className="block text-sm font-medium text-gray-300 mb-2">Password</label>
+                                <div className="relative">
+                                    <Icon name="lock" size={20} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
+                                    <input
+                                        type="password"
+                                        value={form.password}
+                                        onChange={(e) => setForm({...form, password: e.target.value})}
+                                        className="w-full bg-dark/50 border border-gray-700 rounded-lg pl-10 pr-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+                                        placeholder="Enter your password"
+                                        required
+                                    />
+                                </div>
+                            </div>
+                            
+                            <button
+                                type="submit"
+                                className="w-full bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white font-semibold py-3 rounded-lg transition-all transform hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-primary/25"
+                            >
+                                Sign In
+                            </button>
+                        </form>
+                        
+                        <p className="text-center mt-6 text-gray-400">
+                            Don't have an account?{' '}
+                            <button onClick={onToggle} className="text-primary hover:text-secondary font-medium transition-colors">
+                                Sign up
+                            </button>
+                        </p>
+                    </div>
+                </div>
+            );
+        };
+        
+        // Register Page
+        const Register = ({ onToggle }) => {
+            const [form, setForm] = useState({ username: '', email: '', password: '', phone: '' });
+            const [error, setError] = useState('');
+            const { register } = useAuth();
+            
+            const handleSubmit = async (e) => {
+                e.preventDefault();
+                const result = await register(form);
+                if (!result.success) setError(result.error);
+            };
+            
+            return (
+                <div className="min-h-screen flex items-center justify-center mesh-bg p-4">
+                    <div className="glass-card p-8 rounded-2xl w-full max-w-md relative overflow-hidden">
+                        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary via-secondary to-accent" />
+                        
+                        <div className="text-center mb-8">
+                            <div className="w-16 h-16 bg-gradient-to-br from-accent to-secondary rounded-xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-accent/30">
+                                <Icon name="rocket" size={32} className="text-white" />
+                            </div>
+                            <h1 className="text-3xl font-display font-bold gradient-text mb-2">Get Started</h1>
+                            <p className="text-gray-400">Create your account today</p>
+                        </div>
+                        
+                        {error && (
+                            <div className="bg-red-500/10 border border-red-500/30 text-red-400 px-4 py-3 rounded-lg mb-4 flex items-center gap-2">
+                                <Icon name="alert-circle" size={18} />
+                                {error}
+                            </div>
+                        )}
+                        
+                        <form onSubmit={handleSubmit} className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-300 mb-2">Username</label>
+                                <div className="relative">
+                                    <Icon name="user" size={20} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
+                                    <input
+                                        type="text"
+                                        value={form.username}
+                                        onChange={(e) => setForm({...form, username: e.target.value})}
+                                        className="w-full bg-dark/50 border border-gray-700 rounded-lg pl-10 pr-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+                                        placeholder="Choose a username"
+                                        required
+                                    />
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label className="block text-sm font-medium text-gray-300 mb-2">Email</label>
+                                <div className="relative">
+                                    <Icon name="mail" size={20} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
+                                    <input
+                                        type="email"
+                                        value={form.email}
+                                        onChange={(e) => setForm({...form, email: e.target.value})}
+                                        className="w-full bg-dark/50 border border-gray-700 rounded-lg pl-10 pr-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+                                        placeholder="Enter your email"
+                                        required
+                                    />
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label className="block text-sm font-medium text-gray-300 mb-2">Phone (Optional)</label>
+                                <div className="relative">
+                                    <Icon name="phone" size={20} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
+                                    <input
+                                        type="tel"
+                                        value={form.phone}
+                                        onChange={(e) => setForm({...form, phone: e.target.value})}
+                                        className="w-full bg-dark/50 border border-gray-700 rounded-lg pl-10 pr-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+                                        placeholder="Enter phone number"
+                                    />
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label className="block text-sm font-medium text-gray-300 mb-2">Password</label>
+                                <div className="relative">
+                                    <Icon name="lock" size={20} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
+                                    <input
+                                        type="password"
+                                        value={form.password}
+                                        onChange={(e) => setForm({...form, password: e.target.value})}
+                                        className="w-full bg-dark/50 border border-gray-700 rounded-lg pl-10 pr-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+                                        placeholder="Create a password"
+                                        required
+                                    />
+                                </div>
+                            </div>
+                            
+                            <button
+                                type="submit"
+                                className="w-full bg-gradient-to-r from-accent to-secondary hover:from-accent/90 hover:to-secondary/90 text-white font-semibold py-3 rounded-lg transition-all transform hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-accent/25"
+                            >
+                                Create Account
+                            </button>
+                        </form>
+                        
+                        <p className="text-center mt-6 text-gray-400">
+                            Already have an account?{' '}
+                            <button onClick={onToggle} className="text-primary hover:text-secondary font-medium transition-colors">
+                                Sign in
+                            </button>
+                        </p>
+                    </div>
+                </div>
+            );
+        };
+        
+        // Sidebar Component
+        const Sidebar = ({ activeTab, setActiveTab, onLogout }) => {
+            const { user } = useAuth();
+            
+            const menuItems = [
+                { id: 'dashboard', icon: 'layout-dashboard', label: 'Dashboard' },
+                { id: 'create', icon: 'plus-circle', label: 'Create Video' },
+                { id: 'videos', icon: 'film', label: 'My Videos' },
+                { id: 'plans', icon: 'crown', label: 'Plans & Pricing' },
+                { id: 'settings', icon: 'settings', label: 'Settings' },
+            ];
+            
+            return (
+                <div className="w-64 glass h-screen sticky top-0 flex flex-col">
+                    <div className="p-6 border-b border-gray-800">
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 bg-gradient-to-br from-primary to-accent rounded-lg flex items-center justify-center">
+                                <Icon name="zap" size={24} className="text-white" />
+                            </div>
+                            <div>
+                                <h1 className="font-display font-bold text-xl">MoneyPrinter</h1>
+                                <p className="text-xs text-gray-400">Turbo Edition</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <nav className="flex-1 p-4 space-y-2">
+                        {menuItems.map(item => (
+                            <button
+                                key={item.id}
+                                onClick={() => setActiveTab(item.id)}
+                                className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
+                                    activeTab === item.id
+                                        ? 'bg-gradient-to-r from-primary/20 to-secondary/20 text-white border border-primary/30'
+                                        : 'text-gray-400 hover:bg-white/5 hover:text-white'
+                                }`}
+                            >
+                                <Icon name={item.icon} size={20} />
+                                <span className="font-medium">{item.label}</span>
+                                {item.id === 'create' && user?.plan === 'free' && (
+                                    <span className="ml-auto bg-accent/20 text-accent text-xs px-2 py-1 rounded-full">Pro</span>
+                                )}
+                            </button>
+                        ))}
+                    </nav>
+                    
+                    <div className="p-4 border-t border-gray-800">
+                        <div className="glass-card rounded-lg p-4 mb-4">
+                            <div className="flex items-center gap-3 mb-3">
+                                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white font-bold">
+                                    {user?.username?.[0]?.toUpperCase()}
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                    <p className="font-medium truncate">{user?.username}</p>
+                                    <p className="text-xs text-gray-400 capitalize">{user?.plan} Plan</p>
+                                </div>
+                            </div>
+                            {!user?.isPremium && (
+                                <button 
+                                    onClick={() => setActiveTab('plans')}
+                                    className="w-full text-xs bg-gradient-to-r from-primary to-secondary text-white py-2 rounded-md font-medium hover:opacity-90 transition-opacity"
+                                >
+                                    Upgrade Now
+                                </button>
+                            )}
+                        </div>
+                        
+                        <button
+                            onClick={onLogout}
+                            className="w-full flex items-center gap-3 px-4 py-3 text-red-400 hover:bg-red-500/10 rounded-lg transition-all"
+                        >
+                            <Icon name="log-out" size={20} />
+                            <span className="font-medium">Logout</span>
+                        </button>
+                    </div>
+                </div>
+            );
+        };
+        
+        // Dashboard Component
+        const Dashboard = ({ setActiveTab }) => {
+            const { user, token } = useAuth();
+            const [stats, setStats] = useState({ videos: 0, platforms: 0, connected: 0 });
+            const [recentVideos, setRecentVideos] = useState([]);
+            
+            useEffect(() => {
+                fetchStats();
+            }, []);
+            
+            const fetchStats = async () => {
+                try {
+                    const res = await fetch(`${API_URL}/videos`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    const data = await res.json();
+                    if (data.success) {
+                        setRecentVideos(data.data.slice(0, 3));
+                        setStats({
+                            videos: data.data.length,
+                            platforms: user?.socialAccounts ? Object.values(user.socialAccounts).filter(a => a.connected).length : 0,
+                            connected: user?.socialAccounts ? Object.values(user.socialAccounts).filter(a => a.connected).length : 0
+                        });
+                    }
+                } catch (err) {
+                    console.error(err);
+                }
+            };
+            
+            const quickActions = [
+                { icon: 'plus', label: 'Create Video', color: 'from-primary to-secondary', action: () => setActiveTab('create') },
+                { icon: 'link', label: 'Connect Social', color: 'from-secondary to-accent', action: () => setActiveTab('settings') },
+                { icon: 'crown', label: 'View Plans', color: 'from-accent to-primary', action: () => setActiveTab('plans') },
+            ];
+            
+            return (
+                <div className="space-y-6">
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <h2 className="text-3xl font-display font-bold mb-1">Dashboard</h2>
+                            <p className="text-gray-400">Welcome back, {user?.username}! Ready to create?</p>
+                        </div>
+                        <button 
+                            onClick={() => setActiveTab('create')}
+                            className="bg-gradient-to-r from-primary to-secondary text-white px-6 py-3 rounded-lg font-medium flex items-center gap-2 hover:shadow-lg hover:shadow-primary/30 transition-all transform hover:scale-105"
+                        >
+                            <Icon name="plus" size={20} />
+                            New Video
+                        </button>
+                    </div>
+                    
+                    {/* Stats Grid */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div className="glass-card p-6 rounded-2xl relative overflow-hidden group">
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full -mr-16 -mt-16 group-hover:scale-110 transition-transform" />
+                            <div className="relative">
+                                <div className="w-12 h-12 bg-primary/20 rounded-xl flex items-center justify-center mb-4">
+                                    <Icon name="film" size={24} className="text-primary" />
+                                </div>
+                                <p className="text-gray-400 text-sm mb-1">Total Videos</p>
+                                <p className="text-3xl font-bold">{stats.videos}</p>
+                            </div>
+                        </div>
+                        
+                        <div className="glass-card p-6 rounded-2xl relative overflow-hidden group">
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-secondary/10 rounded-full -mr-16 -mt-16 group-hover:scale-110 transition-transform" />
+                            <div className="relative">
+                                <div className="w-12 h-12 bg-secondary/20 rounded-xl flex items-center justify-center mb-4">
+                                    <Icon name="share-2" size={24} className="text-secondary" />
+                                </div>
+                                <p className="text-gray-400 text-sm mb-1">Connected Platforms</p>
+                                <p className="text-3xl font-bold">{stats.platforms}</p>
+                            </div>
+                        </div>
+                        
+                        <div className="glass-card p-6 rounded-2xl relative overflow-hidden group">
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-accent/10 rounded-full -mr-16 -mt-16 group-hover:scale-110 transition-transform" />
+                            <div className="relative">
+                                <div className="w-12 h-12 bg-accent/20 rounded-xl flex items-center justify-center mb-4">
+                                    <Icon name="zap" size={24} className="text-accent" />
+                                </div>
+                                <p className="text-gray-400 text-sm mb-1">Plan Status</p>
+                                <p className="text-3xl font-bold capitalize">{user?.plan}</p>
+                                {user?.plan === 'free' && (
+                                    <button 
+                                        onClick={() => setActiveTab('plans')}
+                                        className="text-xs text-accent mt-2 hover:underline"
+                                    >
+                                        Upgrade →
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {/* Quick Actions */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        {quickActions.map((action, idx) => (
+                            <button
+                                key={idx}
+                                onClick={action.action}
+                                className="glass p-6 rounded-xl flex items-center gap-4 hover:bg-white/5 transition-all group"
+                            >
+                                <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${action.color} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform`}>
+                                    <Icon name={action.icon} size={28} className="text-white" />
+                                </div>
+                                <div className="text-left">
+                                    <p className="font-semibold text-lg">{action.label}</p>
+                                    <p className="text-sm text-gray-400">Click to start</p>
+                                </div>
+                                <Icon name="chevron-right" size={20} className="ml-auto text-gray-500 group-hover:translate-x-1 transition-transform" />
+                            </button>
+                        ))}
+                    </div>
+                    
+                    {/* Recent Videos */}
+                    <div className="glass rounded-2xl p-6">
+                        <div className="flex items-center justify-between mb-6">
+                            <h3 className="text-xl font-bold flex items-center gap-2">
+                                <Icon name="clock" size={20} className="text-primary" />
+                                Recent Videos
+                            </h3>
+                            <button 
+                                onClick={() => setActiveTab('videos')}
+                                className="text-sm text-primary hover:text-secondary transition-colors"
+                            >
+                                View All
+                            </button>
+                        </div>
+                        
+                        {recentVideos.length === 0 ? (
+                            <div className="text-center py-12 text-gray-400">
+                                <Icon name="film" size={48} className="mx-auto mb-4 opacity-30" />
+                                <p>No videos yet. Create your first video now!</p>
+                            </div>
+                        ) : (
+                            <div className="space-y-4">
+                                {recentVideos.map(video => (
+                                    <div key={video._id} className="flex items-center gap-4 p-4 bg-dark/30 rounded-xl hover:bg-dark/50 transition-colors">
+                                        <div className="w-16 h-16 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-lg flex items-center justify-center">
+                                            <Icon name="play" size={24} className="text-primary" />
+                                        </div>
+                                        <div className="flex-1">
+                                            <h4 className="font-medium mb-1">{video.title}</h4>
+                                            <div className="flex items-center gap-2 text-sm text-gray-400">
+                                                <span className={`w-2 h-2 rounded-full ${
+                                                    video.status === 'completed' ? 'bg-green-500' : 
+                                                    video.status === 'processing' ? 'bg-yellow-500' : 'bg-gray-500'
+                                                }`} />
+                                                {video.status}
+                                            </div>
+                                        </div>
+                                        <div className="text-right text-sm text-gray-400">
+                                            {new Date(video.createdAt).toLocaleDateString()}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
+        };
+        
+        // Create Video Component
+        const CreateVideo = ({ showToast }) => {
+            const { user, token } = useAuth();
+            const [topic, setTopic] = useState('');
+            const [selectedPlatforms, setSelectedPlatforms] = useState([]);
+            const [loading, setLoading] = useState(false);
+            const [progress, setProgress] = useState(0);
+            const [videoStatus, setVideoStatus] = useState(null);
+            
+            const platforms = [
+                { id: 'youtube', name: 'YouTube', icon: 'youtube', color: 'bg-red-600', description: 'Long-form & Shorts' },
+                { id: 'facebook', name: 'Facebook', icon: 'facebook', color: 'bg-blue-600', description: 'Reels & Feed' },
+                { id: 'instagram', name: 'Instagram', icon: 'instagram', color: 'bg-gradient-to-br from-purple-600 to-pink-600', description: 'Reels & Stories' },
+                { id: 'tiktok', name: 'TikTok', icon: 'music', color: 'bg-black', description: 'Short-form' },
+            ];
+            
+            const planLimits = {
+                free: { videos: 0, platforms: 0 },
+                starter: { videos: 1, platforms: 1 },
+                pro: { videos: 2, platforms: 2 },
+                business: { videos: 4, platforms: 3 },
+                unlimited: { videos: 999, platforms: 4 }
+            };
+            
+            const currentPlan = planLimits[user?.plan] || planLimits.free;
+            const canCreate = currentPlan.videos > 0;
+            
+            const togglePlatform = (platformId) => {
+                if (selectedPlatforms.includes(platformId)) {
+                    setSelectedPlatforms(selectedPlatforms.filter(p => p !== platformId));
+                } else {
+                    if (selectedPlatforms.length < currentPlan.platforms) {
+                        setSelectedPlatforms([...selectedPlatforms, platformId]);
+                    } else {
+                        showToast(`Your plan allows max ${currentPlan.platforms} platforms`, 'error');
+                    }
+                }
+            };
+            
+            const handleSubmit = async (e) => {
+                e.preventDefault();
+                if (!topic.trim()) return;
+                if (selectedPlatforms.length === 0) {
+                    showToast('Select at least one platform', 'error');
+                    return;
+                }
+                
+                setLoading(true);
+                setProgress(0);
+                
+                // Simulate progress
+                const progressInterval = setInterval(() => {
+                    setProgress(prev => {
+                        if (prev >= 90) return prev;
+                        return prev + Math.random() * 15;
+                    });
+                }, 1000);
+                
+                try {
+                    const res = await fetch(`${API_URL}/videos/generate`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({ topic, platforms: selectedPlatforms })
+                    });
+                    
+                    const data = await res.json();
+                    clearInterval(progressInterval);
+                    
+                    if (data.success) {
+                        setProgress(100);
+                        setVideoStatus('completed');
+                        showToast('Video generated successfully!', 'success');
+                        setTopic('');
+                        setSelectedPlatforms([]);
+                    } else {
+                        if (data.upgrade) {
+                            showToast('Daily limit reached. Upgrade your plan!', 'error');
+                        } else {
+                            showToast(data.error, 'error');
+                        }
+                        setVideoStatus('error');
+                    }
+                } catch (err) {
+                    clearInterval(progressInterval);
+                    showToast('Failed to generate video', 'error');
+                    setVideoStatus('error');
+                } finally {
+                    setLoading(false);
+                }
+            };
+            
+            if (!canCreate) {
+                return (
+                    <div className="flex items-center justify-center min-h-[60vh]">
+                        <div className="text-center">
+                            <div className="w-24 h-24 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                                <Icon name="crown" size={48} className="text-primary" />
+                            </div>
+                            <h2 className="text-3xl font-display font-bold mb-4">Upgrade Required</h2>
+                            <p className="text-gray-400 mb-8 max-w-md mx-auto">
+                                Video generation is not available on the Free plan. Upgrade to Starter or higher to start creating AI-powered videos.
+                            </p>
+                            <button 
+                                onClick={() => window.location.hash = 'plans'}
+                                className="bg-gradient-to-r from-primary to-secondary text-white px-8 py-4 rounded-xl font-semibold hover:shadow-lg hover:shadow-primary/30 transition-all"
+                            >
+                                View Plans
+                            </button>
+                        </div>
+                    </div>
+                );
+            }
+            
+            return (
+                <div className="max-w-4xl mx-auto space-y-6">
+                    <div className="text-center mb-8">
+                        <h2 className="text-3xl font-display font-bold mb-2">Create AI Video</h2>
+                        <p className="text-gray-400">Enter a topic and select platforms to generate your video</p>
+                    </div>
+                    
+                    <div className="glass-card rounded-2xl p-8">
+                        <form onSubmit={handleSubmit} className="space-y-8">
+                            {/* Topic Input */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-300 mb-3 flex items-center gap-2">
+                                    <Icon name="type" size={16} className="text-primary" />
+                                    Video Topic
+                                </label>
+                                <input
+                                    type="text"
+                                    value={topic}
+                                    onChange={(e) => setTopic(e.target.value)}
+                                    placeholder="e.g., 'Top 10 AI Tools in 2024', 'How to Make Money Online', 'Healthy Breakfast Ideas'"
+                                    className="w-full bg-dark/50 border border-gray-700 rounded-xl px-6 py-4 text-lg text-white placeholder-gray-500 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
+                                    disabled={loading}
+                                />
+                                <p className="mt-2 text-sm text-gray-500">
+                                    Be specific for better results. AI will generate script, find footage, and add voiceover.
+                                </p>
+                            </div>
+                            
+                            {/* Platform Selection */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-300 mb-3 flex items-center gap-2">
+                                    <Icon name="share-2" size={16} className="text-secondary" />
+                                    Select Platforms ({selectedPlatforms.length}/{currentPlan.platforms})
+                                </label>
+                                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                    {platforms.map(platform => (
+                                        <label
+                                            key={platform.id}
+                                            className={`cursor-pointer relative group ${loading ? 'pointer-events-none opacity-50' : ''}`}
+                                        >
+                                            <input
+                                                type="checkbox"
+                                                className="platform-checkbox hidden"
+                                                checked={selectedPlatforms.includes(platform.id)}
+                                                onChange={() => togglePlatform(platform.id)}
+                                            />
+                                            <div className={`border-2 border-gray-700 rounded-xl p-4 transition-all ${
+                                                selectedPlatforms.includes(platform.id) 
+                                                    ? 'border-primary bg-primary/10' 
+                                                    : 'hover:border-gray-600 bg-dark/30'
+                                            }`}>
+                                                <div className={`w-12 h-12 ${platform.color} rounded-lg flex items-center justify-center mb-3 mx-auto`}>
+                                                    <Icon name={platform.icon} size={24} className="text-white" />
+                                                </div>
+                                                <p className="font-medium text-center mb-1">{platform.name}</p>
+                                                <p className="text-xs text-gray-400 text-center">{platform.description}</p>
+                                                
+                                                {selectedPlatforms.includes(platform.id) && (
+                                                    <div className="absolute top-2 right-2 w-6 h-6 bg-primary rounded-full flex items-center justify-center">
+                                                        <Icon name="check" size={14} className="text-white" />
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </label>
+                                    ))}
+                                </div>
+                            </div>
+                            
+                            {/* Submit Button */}
+                            <button
+                                type="submit"
+                                disabled={loading || !topic.trim() || selectedPlatforms.length === 0}
+                                className="w-full bg-gradient-to-r from-primary via-secondary to-accent text-white font-bold py-4 rounded-xl text-lg disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-2xl hover:shadow-primary/30 transition-all transform hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden"
+                            >
+                                {loading ? (
+                                    <span className="flex items-center justify-center gap-3">
+                                        <Icon name="loader-2" size={24} className="animate-spin-slow" />
+                                        Generating Video...
+                                    </span>
+                                ) : (
+                                    <span className="flex items-center justify-center gap-3">
+                                        <Icon name="wand-2" size={24} />
+                                        Generate AI Video
+                                    </span>
+                                )}
+                            </button>
+                        </form>
+                        
+                        {/* Progress Bar */}
+                        {loading && (
+                            <div className="mt-8">
+                                <div className="flex justify-between text-sm mb-2">
+                                    <span className="text-gray-400">Generating video...</span>
+                                    <span className="text-primary font-medium">{Math.round(progress)}%</span>
+                                </div>
+                                <div className="h-3 bg-dark/50 rounded-full overflow-hidden">
+                                    <div 
+                                        className="h-full bg-gradient-to-r from-primary to-secondary rounded-full transition-all duration-500 relative"
+                                        style={{ width: `${progress}%` }}
+                                    >
+                                        <div className="absolute inset-0 shimmer" />
+                                    </div>
+                                </div>
+                                <div className="mt-4 grid grid-cols-3 gap-4 text-center text-sm">
+                                    <div className={`p-3 rounded-lg ${progress > 20 ? 'bg-primary/20 text-primary' : 'bg-dark/30 text-gray-500'}`}>
+                                        <Icon name="file-text" size={16} className="mx-auto mb-1" />
+                                        Script
+                                    </div>
+                                    <div className={`p-3 rounded-lg ${progress > 50 ? 'bg-secondary/20 text-secondary' : 'bg-dark/30 text-gray-500'}`}>
+                                        <Icon name="image" size={16} className="mx-auto mb-1" />
+                                        Footage
+                                    </div>
+                                    <div className={`p-3 rounded-lg ${progress > 80 ? 'bg-accent/20 text-accent' : 'bg-dark/30 text-gray-500'}`}>
+                                        <Icon name="mic" size={16} className="mx-auto mb-1" />
+                                        Voiceover
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                        
+                        {videoStatus === 'completed' && (
+                            <div className="mt-8 p-6 bg-green-500/10 border border-green-500/30 rounded-xl flex items-center gap-4">
+                                <div className="w-12 h-12 bg-green-500/20 rounded-full flex items-center justify-center">
+                                    <Icon name="check-circle" size={24} className="text-green-500" />
+                                </div>
+                                <div className="flex-1">
+                                    <h4 className="font-bold text-green-400 mb-1">Video Generated!</h4>
+                                    <p className="text-sm text-gray-400">Your video is ready. Check the My Videos section.</p>
+                                </div>
+                                <button 
+                                    onClick={() => window.location.hash = 'videos'}
+                                    className="px-4 py-2 bg-green-500/20 text-green-400 rounded-lg hover:bg-green-500/30 transition-colors"
+                                >
+                                    View
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                    
+                    {/* Tips */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div className="glass p-4 rounded-xl flex items-start gap-3">
+                            <Icon name="lightbulb" size={20} className="text-yellow-500 mt-1" />
+                            <div>
+                                <p className="font-medium mb-1">Be Specific</p>
+                                <p className="text-sm text-gray-400">Detailed topics produce better scripts and visuals</p>
+                            </div>
+                        </div>
+                        <div className="glass p-4 rounded-xl flex items-start gap-3">
+                            <Icon name="trending-up" size={20} className="text-green-500 mt-1" />
+                            <div>
+                                <p className="font-medium mb-1">Trending Topics</p>
+                                <p className="text-sm text-gray-400">Current events and trends get more views</p>
+                            </div>
+                        </div>
+                        <div className="glass p-4 rounded-xl flex items-start gap-3">
+                            <Icon name="target" size={20} className="text-primary mt-1" />
+                            <div>
+                                <p className="font-medium mb-1">Target Audience</p>
+                                <p className="text-sm text-gray-400">Consider who you're making the video for</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+        
+        // Videos List Component
+        const VideosList = ({ showToast }) => {
+            const { token } = useAuth();
+            const [videos, setVideos] = useState([]);
+            const [loading, setLoading] = useState(true);
+            
+            useEffect(() => {
+                fetchVideos();
+            }, []);
+            
+            const fetchVideos = async () => {
+                try {
+                    const res = await fetch(`${API_URL}/videos`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    const data = await res.json();
+                    if (data.success) {
+                        setVideos(data.data);
+                    }
+                } catch (err) {
+                    showToast('Failed to load videos', 'error');
+                }
+                setLoading(false);
+            };
+            
+            const getStatusColor = (status) => {
+                switch(status) {
+                    case 'completed': return 'bg-green-500';
+                    case 'processing': return 'bg-yellow-500';
+                    case 'pending': return 'bg-gray-500';
+                    default: return 'bg-red-500';
+                }
+            };
+            
+            const getStatusIcon = (status) => {
+                switch(status) {
+                    case 'completed': return 'check-circle';
+                    case 'processing': return 'loader-2';
+                    case 'pending': return 'clock';
+                    default: return 'x-circle';
+                }
+            };
+            
+            if (loading) {
+                return (
+                    <div className="flex items-center justify-center h-64">
+                        <Icon name="loader-2" size={48} className="animate-spin text-primary" />
+                    </div>
+                );
+            }
+            
+            return (
+                <div className="space-y-6">
+                    <div className="flex items-center justify-between">
+                        <h2 className="text-3xl font-display font-bold">My Videos</h2>
+                        <span className="text-gray-400">{videos.length} videos total</span>
+                    </div>
+                    
+                    {videos.length === 0 ? (
+                        <div className="glass rounded-2xl p-12 text-center">
+                            <div className="w-24 h-24 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                                <Icon name="film" size={48} className="text-primary" />
+                            </div>
+                            <h3 className="text-xl font-bold mb-2">No Videos Yet</h3>
+                            <p className="text-gray-400 mb-6">Start creating your first AI-generated video</p>
+                            <button 
+                                onClick={() => window.location.hash = 'create'}
+                                className="bg-gradient-to-r from-primary to-secondary text-white px-6 py-3 rounded-lg font-medium"
+                            >
+                                Create Video
+                            </button>
+                        </div>
+                    ) : (
+                        <div className="grid gap-4">
+                            {videos.map(video => (
+                                <div key={video._id} className="glass-card rounded-xl p-6 flex items-center gap-6 hover:bg-white/5 transition-all group">
+                                    <div className="w-32 h-20 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-lg flex items-center justify-center relative overflow-hidden">
+                                        {video.status === 'completed' ? (
+                                            <>
+                                                <Icon name="play" size={32} className="text-primary relative z-10" />
+                                                <div className="absolute inset-0 bg-gradient-to-t from-dark/50 to-transparent" />
+                                            </>
+                                        ) : (
+                                            <Icon name={getStatusIcon(video.status)} size={32} className={`${
+                                                video.status === 'processing' ? 'animate-spin text-yellow-500' : 'text-gray-500'
+                                            }`} />
+                                        )}
+                                    </div>
+                                    
+                                    <div className="flex-1">
+                                        <h3 className="font-bold text-lg mb-1 group-hover:text-primary transition-colors">{video.title}</h3>
+                                        <div className="flex items-center gap-4 text-sm text-gray-400">
+                                            <span className="flex items-center gap-2">
+                                                <span className={`w-2 h-2 rounded-full ${getStatusColor(video.status)}`} />
+                                                {video.status.charAt(0).toUpperCase() + video.status.slice(1)}
+                                            </span>
+                                            <span>•</span>
+                                            <span>{new Date(video.createdAt).toLocaleDateString()}</span>
+                                            {video.platforms?.length > 0 && (
+                                                <>
+                                                    <span>•</span>
+                                                    <span className="flex items-center gap-1">
+                                                        <Icon name="share-2" size={14} />
+                                                        {video.platforms.join(', ')}
+                                                    </span>
+                                                </>
+                                            )}
+                                        </div>
+                                    </div>
+                                    
+                                    <div className="flex items-center gap-3">
+                                        {video.status === 'completed' && (
+                                            <>
+                                                <button className="p-3 bg-primary/20 text-primary rounded-lg hover:bg-primary/30 transition-colors">
+                                                    <Icon name="download" size={20} />
+                                                </button>
+                                                <button className="p-3 bg-secondary/20 text-secondary rounded-lg hover:bg-secondary/30 transition-colors">
+                                                    <Icon name="share" size={20} />
+                                                </button>
+                                            </>
+                                        )}
+                                        {video.status === 'processing' && (
+                                            <div className="flex items-center gap-2 text-yellow-500">
+                                                <div className="w-8 h-8 border-2 border-yellow-500 border-t-transparent rounded-full animate-spin" />
+                                                <span className="text-sm">Processing...</span>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
+            );
+        };
+        
+        // Plans Component
+        const Plans = ({ showToast }) => {
+            const { user, token } = useAuth();
+            const [plans, setPlans] = useState({});
+            const [loading, setLoading] = useState(false);
+            
+            useEffect(() => {
+                fetchPlans();
+            }, []);
+            
+            const fetchPlans = async () => {
+                try {
+                    const res = await fetch(`${API_URL}/plans`);
+                    const data = await res.json();
+                    if (data.success) setPlans(data.data);
+                } catch (err) {
+                    console.error(err);
+                }
+            };
+            
+            const handleSubscribe = async (planKey) => {
+                if (planKey === 'free') return;
+                
+                setLoading(true);
+                try {
+                    const res = await fetch(`${API_URL}/payment/create-order`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({ plan: planKey })
+                    });
+                    
+                    const data = await res.json();
+                    if (data.success) {
+                        // Initialize Razorpay
+                        const options = {
+                            key: data.data.keyId,
+                            amount: data.data.amount,
+                            currency: data.data.currency,
+                            name: 'MoneyPrinter Turbo',
+                            description: `${plans[planKey].name} Plan Subscription`,
+                            order_id: data.data.orderId,
+                            handler: async (response) => {
+                                const verifyRes = await fetch(`${API_URL}/payment/verify`, {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'Authorization': `Bearer ${token}`
+                                    },
+                                    body: JSON.stringify({
+                                        razorpayOrderId: response.razorpay_order_id,
+                                        razorpayPaymentId: response.razorpay_payment_id,
+                                        razorpaySignature: response.razorpay_signature,
+                                        plan: planKey
+                                    })
+                                });
+                                
+                                const verifyData = await verifyRes.json();
+                                if (verifyData.success) {
+                                    showToast('Payment successful! Plan upgraded.', 'success');
+                                    window.location.reload();
+                                }
+                            },
+                            theme: { color: '#6366f1' }
+                        };
+                        
+                        const rzp = new window.Razorpay(options);
+                        rzp.open();
+                    }
+                } catch (err) {
+                    showToast('Failed to initiate payment', 'error');
+                }
+                setLoading(false);
+            };
+            
+            const planFeatures = {
+                free: ['Account creation', 'Browse features', 'No video generation'],
+                starter: ['1 video per day', '1 platform', 'AI script generation', '720p quality'],
+                pro: ['2 videos per day', '2 platforms', 'AI script + footage', '1080p quality', 'Priority processing'],
+                business: ['4 videos per day', '3 platforms', 'All AI features', '4K quality', 'Priority support', 'Custom branding'],
+                unlimited: ['Unlimited videos', 'All platforms', 'All features', '4K quality', '24/7 support', 'API access', 'White label']
+            };
+            
+            return (
+                <div className="space-y-6">
+                    <div className="text-center mb-12">
+                        <h2 className="text-4xl font-display font-bold mb-4">Choose Your Plan</h2>
+                        <p className="text-gray-400 max-w-2xl mx-auto">
+                            Unlock the full potential of AI video generation. Upgrade your plan to create more videos and reach more platforms.
+                        </p>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
+                        {Object.entries(plans).map(([key, plan]) => (
+                            <div 
+                                key={key}
+                                className={`plan-card glass rounded-2xl p-6 relative ${
+                                    user?.plan === key ? 'border-2 border-primary' : ''
+                                } ${key === 'pro' ? 'featured' : ''}`}
+                            >
+                                {key === 'pro' && (
+                                    <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-primary to-secondary text-white text-xs font-bold px-4 py-1 rounded-full">
+                                        MOST POPULAR
+                                    </div>
+                                )}
+                                
+                                <div className="text-center mb-6">
+                                    <h3 className="text-xl font-bold mb-2">{plan.name}</h3>
+                                    <div className="flex items-baseline justify-center gap-1">
+                                        <span className="text-3xl font-bold">₹{plan.price}</span>
+                                        {plan.price > 0 && <span className="text-gray-400">/mo</span>}
+                                    </div>
+                                </div>
+                                
+                                <div className="space-y-3 mb-6">
+                                    <div className="flex items-center justify-between text-sm">
+                                        <span className="text-gray-400">Videos/day</span>
+                                        <span className="font-medium">{plan.videosPerDay === 999 ? 'Unlimited' : plan.videosPerDay}</span>
+                                    </div>
+                                    <div className="flex items-center justify-between text-sm">
+                                        <span className="text-gray-400">Platforms</span>
+                                        <span className="font-medium">{plan.platforms}</span>
+                                    </div>
+                                </div>
+                                
+                                <ul className="space-y-3 mb-6 text-sm">
+                                    {(planFeatures[key] || []).map((feature, idx) => (
+                                        <li key={idx} className="flex items-center gap-2">
+                                            <Icon name="check" size={16} className={plan.price > 0 ? "text-primary" : "text-gray-600"} />
+                                            <span className={plan.price === 0 ? "text-gray-500" : ""}>{feature}</span>
+                                        </li>
+                                    ))}
+                                </ul>
+                                
+                                <button
+                                    onClick={() => handleSubscribe(key)}
+                                    disabled={user?.plan === key || loading}
+                                    className={`w-full py-3 rounded-lg font-medium transition-all ${
+                                        user?.plan === key
+                                            ? 'bg-green-500/20 text-green-500 cursor-default'
+                                            : key === 'free'
+                                                ? 'bg-gray-700 text-gray-300 cursor-not-allowed'
+                                                : 'bg-gradient-to-r from-primary to-secondary text-white hover:shadow-lg hover:shadow-primary/30'
+                                    }`}
+                                >
+                                    {user?.plan === key ? 'Current Plan' : key === 'free' ? 'Free' : 'Subscribe'}
+                                </button>
+                            </div>
+                        ))}
+                    </div>
+                    
+                    {/* Money Back Guarantee */}
+                    <div className="glass rounded-xl p-6 flex items-center justify-center gap-8 mt-12">
+                        <div className="flex items-center gap-3">
+                            <div className="w-12 h-12 bg-green-500/20 rounded-full flex items-center justify-center">
+                                <Icon name="shield-check" size={24} className="text-green-500" />
+                            </div>
+                            <div>
+                                <p className="font-bold">7-Day Money Back</p>
+                                <p className="text-sm text-gray-400">No questions asked</p>
+                            </div>
+                        </div>
+                        <div className="w-px h-12 bg-gray-700" />
+                        <div className="flex items-center gap-3">
+                            <div className="w-12 h-12 bg-primary/20 rounded-full flex items-center justify-center">
+                                <Icon name="lock" size={24} className="text-primary" />
+                            </div>
+                            <div>
+                                <p className="font-bold">Secure Payment</p>
+                                <p className="text-sm text-gray-400">256-bit SSL encryption</p>
+                            </div>
+                        </div>
+                        <div className="w-px h-12 bg-gray-700" />
+                        <div className="flex items-center gap-3">
+                            <div className="w-12 h-12 bg-secondary/20 rounded-full flex items-center justify-center">
+                                <Icon name="headphones" size={24} className="text-secondary" />
+                            </div>
+                            <div>
+                                <p className="font-bold">24/7 Support</p>
+                                <p className="text-sm text-gray-400">We're here to help</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {/* Razorpay Script */}
+                    <script src="https://checkout.razorpay.com/v1/checkout.js" async />
+                </div>
+            );
+        };
+        
+        // Settings Component
+        const Settings = ({ showToast }) => {
+            const { user, token, logout } = useAuth();
+            const [accounts, setAccounts] = useState({});
+            const [loading, setLoading] = useState({});
+            
+            useEffect(() => {
+                fetchAccounts();
+            }, []);
+            
+            const fetchAccounts = async () => {
+                try {
+                    const res = await fetch(`${API_URL}/social/accounts`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    const data = await res.json();
+                    if (data.success) setAccounts(data.data);
+                } catch (err) {
+                    console.error(err);
+                }
+            };
+            
+            const connectPlatform = async (platform) => {
+                setLoading({ ...loading, [platform]: true });
+                try {
+                    const res = await fetch(`${API_URL}/social/${platform}/connect`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    const data = await res.json();
+                    if (data.success) {
+                        window.location.href = data.url;
+                    }
+                } catch (err) {
+                    showToast('Failed to connect', 'error');
+                }
+                setLoading({ ...loading, [platform]: false });
+            };
+            
+            const disconnectPlatform = async (platform) => {
+                try {
+                    await fetch(`${API_URL}/social/disconnect`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({ platform })
+                    });
+                    showToast('Disconnected successfully', 'success');
+                    fetchAccounts();
+                } catch (err) {
+                    showToast('Failed to disconnect', 'error');
+                }
+            };
+            
+            const platforms = [
+                { 
+                    id: 'youtube', 
+                    name: 'YouTube', 
+                    icon: 'youtube', 
+                    color: 'from-red-600 to-red-700',
+                    description: 'Upload videos to your YouTube channel automatically'
+                },
+                { 
+                    id: 'facebook', 
+                    name: 'Facebook', 
+                    icon: 'facebook', 
+                    color: 'from-blue-600 to-blue-700',
+                    description: 'Post to Facebook Pages and Groups'
+                },
+                { 
+                    id: 'instagram', 
+                    name: 'Instagram', 
+                    icon: 'instagram', 
+                    color: 'from-purple-600 to-pink-600',
+                    description: 'Share Reels and Stories (Coming Soon)'
+                }
+            ];
+            
+            return (
+                <div className="max-w-4xl mx-auto space-y-6">
+                    <h2 className="text-3xl font-display font-bold">Settings</h2>
+                    
+                    {/* Social Connections */}
+                    <div className="glass-card rounded-2xl p-6">
+                        <div className="flex items-center gap-3 mb-6">
+                            <div className="w-10 h-10 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center">
+                                <Icon name="share-2" size={20} className="text-white" />
+                            </div>
+                            <div>
+                                <h3 className="text-xl font-bold">Social Media Accounts</h3>
+                                <p className="text-sm text-gray-400">Connect your accounts for automatic posting</p>
+                            </div>
+                        </div>
+                        
+                        <div className="space-y-4">
+                            {platforms.map(platform => {
+                                const account = accounts[platform.id];
+                                const isConnected = account?.connected;
+                                
+                                return (
+                                    <div key={platform.id} className="flex items-center justify-between p-4 bg-dark/30 rounded-xl">
+                                        <div className="flex items-center gap-4">
+                                            <div className={`w-12 h-12 bg-gradient-to-br ${platform.color} rounded-lg flex items-center justify-center`}>
+                                                <Icon name={platform.icon} size={24} className="text-white" />
+                                            </div>
+                                            <div>
+                                                <h4 className="font-bold flex items-center gap-2">
+                                                    {platform.name}
+                                                    {isConnected && (
+                                                        <span className="text-xs bg-green-500/20 text-green-500 px-2 py-1 rounded-full">
+                                                            Connected
+                                                        </span>
+                                                    )}
+                                                </h4>
+                                                <p className="text-sm text-gray-400">
+                                                    {isConnected ? account.name : platform.description}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        
+                                        {isConnected ? (
+                                            <button
+                                                onClick={() => disconnectPlatform(platform.id)}
+                                                className="px-4 py-2 bg-red-500/20 text-red-400 rounded-lg hover:bg-red-500/30 transition-colors flex items-center gap-2"
+                                            >
+                                                <Icon name="unlink" size={18} />
+                                                Disconnect
+                                            </button>
+                                        ) : (
+                                            <button
+                                                onClick={() => connectPlatform(platform.id)}
+                                                disabled={loading[platform.id]}
+                                                className="px-4 py-2 bg-white/10 text-white rounded-lg hover:bg-white/20 transition-colors flex items-center gap-2 disabled:opacity-50"
+                                            >
+                                                {loading[platform.id] ? (
+                                                    <Icon name="loader-2" size={18} className="animate-spin" />
+                                                ) : (
+                                                    <Icon name="link" size={18} />
+                                                )}
+                                                Connect
+                                            </button>
+                                        )}
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+                    
+                    {/* Account Settings */}
+                    <div className="glass-card rounded-2xl p-6">
+                        <div className="flex items-center gap-3 mb-6">
+                            <div className="w-10 h-10 bg-gradient-to-br from-secondary to-accent rounded-lg flex items-center justify-center">
+                                <Icon name="user" size={20} className="text-white" />
+                            </div>
+                            <div>
+                                <h3 className="text-xl font-bold">Account</h3>
+                                <p className="text-sm text-gray-400">Manage your account settings</p>
+                            </div>
+                        </div>
+                        
+                        <div className="space-y-4">
+                            <div className="flex items-center justify-between p-4 bg-dark/30 rounded-xl">
+                                <div className="flex items-center gap-3">
+                                    <Icon name="mail" size={20} className="text-gray-400" />
+                                    <div>
+                                        <p className="font-medium">Email</p>
+                                        <p className="text-sm text-gray-400">{user?.email}</p>
+                                    </div>
+                                </div>
+                                <span className="text-xs bg-green-500/20 text-green-500 px-3 py-1 rounded-full">
+                                    Verified
+                                </span>
+                            </div>
+                            
+                            <div className="flex items-center justify-between p-4 bg-dark/30 rounded-xl">
+                                <div className="flex items-center gap-3">
+                                    <Icon name="shield" size={20} className="text-gray-400" />
+                                    <div>
+                                        <p className="font-medium">Password</p>
+                                        <p className="text-sm text-gray-400">Last changed recently</p>
+                                    </div>
+                                </div>
+                                <button className="px-4 py-2 bg-white/10 rounded-lg hover:bg-white/20 transition-colors text-sm">
+                                    Change
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {/* Danger Zone */}
+                    <div className="glass-card rounded-2xl p-6 border-red-500/20">
+                        <div className="flex items-center gap-3 mb-6">
+                            <div className="w-10 h-10 bg-red-500/20 rounded-lg flex items-center justify-center">
+                                <Icon name="alert-triangle" size={20} className="text-red-500" />
+                            </div>
+                            <div>
+                                <h3 className="text-xl font-bold text-red-400">Danger Zone</h3>
+                                <p className="text-sm text-gray-400">Irreversible actions</p>
+                            </div>
+                        </div>
+                        
+                        <button
+                            onClick={logout}
+                            className="w-full p-4 bg-red-500/10 border border-red-500/30 text-red-400 rounded-xl hover:bg-red-500/20 transition-colors flex items-center justify-center gap-3 font-medium"
+                        >
+                            <Icon name="log-out" size={20} />
+                            Logout from all devices
+                        </button>
+                    </div>
+                </div>
+            );
+        };
+        
+        // Main App Component
+        const App = () => {
+            const [activeTab, setActiveTab] = useState('dashboard');
+            const [toast, setToast] = useState(null);
+            const [isAuthPage, setIsAuthPage] = useState(false);
+            const { user, loading } = useAuth();
+            
+            const showToast = (message, type = 'info') => {
+                setToast({ message, type });
+            };
+            
+            useEffect(() => {
+                const hash = window.location.hash.replace('#', '');
+                if (hash && ['dashboard', 'create', 'videos', 'plans', 'settings'].includes(hash)) {
+                    setActiveTab(hash);
+                }
+            }, []);
+            
+            useEffect(() => {
+                window.location.hash = activeTab;
+            }, [activeTab]);
+            
+            if (loading) {
+                return (
+                    <div className="min-h-screen flex items-center justify-center mesh-bg">
+                        <div className="flex flex-col items-center gap-4">
+                            <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+                            <p className="text-gray-400">Loading...</p>
+                        </div>
+                    </div>
+                );
+            }
+            
+            if (!user) {
+                return isAuthPage ? 
+                    <Register onToggle={() => setIsAuthPage(false)} /> : 
+                    <Login onToggle={() => setIsAuthPage(true)} />;
+            }
+            
+            const renderContent = () => {
+                switch(activeTab) {
+                    case 'dashboard': return <Dashboard setActiveTab={setActiveTab} />;
+                    case 'create': return <CreateVideo showToast={showToast} />;
+                    case 'videos': return <VideosList showToast={showToast} />;
+                    case 'plans': return <Plans showToast={showToast} />;
+                    case 'settings': return <Settings showToast={showToast} />;
+                    default: return <Dashboard setActiveTab={setActiveTab} />;
+                }
+            };
+            
+            return (
+                <div className="flex min-h-screen bg-darker">
+                    <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} onLogout={() => {}} />
+                    <main className="flex-1 p-8 overflow-auto">
+                        <div className="max-w-7xl mx-auto">
+                            {renderContent()}
+                        </div>
+                    </main>
+                    {toast && <Toast {...toast} onClose={() => setToast(null)} />}
+                </div>
+            );
+        };
+        
+        // Root Render
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(
+            <AuthProvider>
+                <App />
+            </AuthProvider>
+        );
+    </script>
+</body>
+</html>
