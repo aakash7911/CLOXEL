@@ -69,13 +69,14 @@ async def generate(req: VideoRequest, background_tasks: BackgroundTasks):
 
 @app.get("/status/{job_id}")
 async def get_status(job_id: str):
-    # Agar job dictionary mein mil jaye toh uska status dikhao
     if job_id in jobs:
         return jobs[job_id]
     
-    # Agar dictionary mein abhi nahi aayi, toh error ki jagah 'processing' bhejo
-    # Isse frontend par 'not_found' nahi dikhega
-    return {"status": "Starting engine..."}
+    # Check karo agar file disk par ban chuki hai (Restart ke baad bhi)
+    if os.path.exists(f"final_{job_id}.mp4"):
+        return {"status": "completed"}
+        
+    return {"status": "Processing in background..."}
 
 @app.get("/download/{job_id}")
 async def download(job_id: str):
@@ -83,6 +84,7 @@ async def download(job_id: str):
     if job and job.get("status") == "completed":
         return FileResponse(job["file"])
     return {"error": "Not ready"}
+
 
 
 
