@@ -1,9 +1,19 @@
+import os
 import requests
+from dotenv import load_dotenv
 
-# === APNI PEXELS KEY YAHAN DAALO ===
-PEXELS_API_KEY = "jqGZN1a4uHQFpxqdFAdVaD1l1eyjW1kzHqtdlNJ1TPkSmOEXcbAL7yhN"
+# Local development ke liye .env file load karega (Optional)
+load_dotenv()
+
+# === RENDER SE API KEY UTHAYEGA ===
+# Render ke Dashboard mein Variable Name: PEXELS_API_KEY daalna
+PEXELS_API_KEY = os.getenv("PEXELS_API_KEY")
 
 def fetch_video(keyword, filename):
+    if not PEXELS_API_KEY:
+        print("❌ Error: PEXELS_API_KEY nahi mili! Render settings check karein.")
+        return None
+
     print(f"📥 Pexels se '{keyword}' dhoondha ja raha hai...")
     headers = {"Authorization": PEXELS_API_KEY}
     url = f"https://api.pexels.com/videos/search?query={keyword}&per_page=1&orientation=portrait"
