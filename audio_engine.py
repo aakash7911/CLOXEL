@@ -2,20 +2,20 @@ import os
 import asyncio
 import edge_tts
 
-def make_audio(text, output_path):
+def make_audio(text, output_path, voice_id="hi-IN-MadhurNeural"):
     """
-    MoneyPrinter style natural voice generator.
-    Standard: hi-IN-MadhurNeural (Ek dum saaf Hindi aawaz)
+    Ab ye 'voice_id' ko accept karega, jo pichle error ki wajah thi.
+    Default voice Madhur rakhi hai agar koi choice na mile.
     """
-    print(f"🎙️ Advanced Voice ban rahi hai: {text[:30]}...")
+    print(f"🎙️ Advanced Voice ban rahi hai ({voice_id}): {text[:30]}...")
     
     async def generate():
-        # Aap 'hi-IN-SwaraNeural' bhi use kar sakte ho female voice ke liye
-        communicate = edge_tts.Communicate(text, "hi-IN-MadhurNeural")
+        # Yahan fixed voice ki jagah variable 'voice_id' use hoga
+        communicate = edge_tts.Communicate(text, voice_id)
         await communicate.save(output_path)
     
     try:
-        # Async function ko normal function ki tarah chalane ke liye
+        # Async loop manage karne ke liye try-except zaroori hai
         asyncio.run(generate())
         if os.path.exists(output_path):
             return output_path
