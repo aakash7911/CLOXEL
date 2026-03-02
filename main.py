@@ -69,8 +69,13 @@ async def generate(req: VideoRequest, background_tasks: BackgroundTasks):
 
 @app.get("/status/{job_id}")
 async def get_status(job_id: str):
-    # Frontend yahi se status uthayega
-    return jobs.get(job_id, {"status": "processing"})
+    # Agar job dictionary mein mil jaye toh uska status dikhao
+    if job_id in jobs:
+        return jobs[job_id]
+    
+    # Agar dictionary mein abhi nahi aayi, toh error ki jagah 'processing' bhejo
+    # Isse frontend par 'not_found' nahi dikhega
+    return {"status": "Starting engine..."}
 
 @app.get("/download/{job_id}")
 async def download(job_id: str):
@@ -78,5 +83,6 @@ async def download(job_id: str):
     if job and job.get("status") == "completed":
         return FileResponse(job["file"])
     return {"error": "Not ready"}
+
 
 
