@@ -63,7 +63,7 @@ def merge_and_export(scene_list, output_name):
             output_name, 
             codec="libx264", 
             audio_codec="aac", 
-            fps=12,              # FPS 24 se 12 kiya (Bohot RAM bachegi)
+            fps=10,              # FPS 24 se 12 kiya (Bohot RAM bachegi)
             threads=1,           # Sirf 1 thread taki Render kill na kare
             preset="ultrafast",  # Fast process taki memory build-up na ho
             logger=None          # Extra logs band kiye
