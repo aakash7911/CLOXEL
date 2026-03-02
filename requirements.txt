@@ -1,240 +1,164 @@
-aiohappyeyeballs==2.6.1
-aiohttp==3.13.3
-aiosignal==1.4.0
-altair==6.0.0
-annotated-types==0.7.0
-attrs==25.4.0
-audioop-lts==0.2.2
-blinker==1.9.0
-cachetools==6.2.6
-certifi==2026.1.4
-cffi==2.0.0
-charset-normalizer==3.4.4
-click==8.1.8
-cryptography==46.0.5
-decorator==4.4.2
-edge-tts==7.2.7
-Flask==3.1.2
-frozenlist==1.8.0
-gitdb==4.0.12
-GitPython==3.1.46
-google-ai-generativelanguage==0.6.15
-google-api-core==2.25.2
-google-api-python-client==2.190.0
-google-auth==2.49.0.dev0
-google-auth-httplib2==0.3.0
-google-generativeai==0.8.6
-googleapis-common-protos==1.72.0
-grpcio==1.78.0
-grpcio-status==1.71.2
-gTTS==2.5.4
-httplib2==0.31.2
-idna==3.11
-ImageIO==2.37.2
-imageio-ffmpeg==0.6.0
-itsdangerous==2.2.0
-Jinja2==3.1.6
-joblib==1.5.3
-jsonschema==4.26.0
-jsonschema-specifications==2025.9.1
-MarkupSafe==3.0.3
-moviepy==1.0.3
-multidict==6.7.1
-narwhals==2.17.0
-nltk==3.9.3
-numpy==2.4.2
-packaging==26.0
-pandas==2.3.3
-pillow==11.3.0
-proglog==0.1.12
-propcache==0.4.1
-proto-plus==1.27.1
-protobuf==5.29.6
-pyarrow==23.0.1
-pyasn1==0.6.2
-pyasn1_modules==0.4.2
-PyAudio==0.2.14
-pycparser==3.0
-pydantic==2.12.5
-pydantic_core==2.41.5
-pydeck==0.9.1
-pyjokes==0.8.3
-pyobjc==12.1
-pyobjc-core==12.1
-pyobjc-framework-Accessibility==12.1
-pyobjc-framework-Accounts==12.1
-pyobjc-framework-AddressBook==12.1
-pyobjc-framework-AdServices==12.1
-pyobjc-framework-AdSupport==12.1
-pyobjc-framework-AppleScriptKit==12.1
-pyobjc-framework-AppleScriptObjC==12.1
-pyobjc-framework-ApplicationServices==12.1
-pyobjc-framework-AppTrackingTransparency==12.1
-pyobjc-framework-AudioVideoBridging==12.1
-pyobjc-framework-AuthenticationServices==12.1
-pyobjc-framework-AutomaticAssessmentConfiguration==12.1
-pyobjc-framework-Automator==12.1
-pyobjc-framework-AVFoundation==12.1
-pyobjc-framework-AVKit==12.1
-pyobjc-framework-AVRouting==12.1
-pyobjc-framework-BackgroundAssets==12.1
-pyobjc-framework-BusinessChat==12.1
-pyobjc-framework-CalendarStore==12.1
-pyobjc-framework-CallKit==12.1
-pyobjc-framework-Carbon==12.1
-pyobjc-framework-CFNetwork==12.1
-pyobjc-framework-ClassKit==12.1
-pyobjc-framework-CloudKit==12.1
-pyobjc-framework-Cocoa==12.1
-pyobjc-framework-Collaboration==12.1
-pyobjc-framework-ColorSync==12.1
-pyobjc-framework-Contacts==12.1
-pyobjc-framework-ContactsUI==12.1
-pyobjc-framework-CoreAudio==12.1
-pyobjc-framework-CoreAudioKit==12.1
-pyobjc-framework-CoreBluetooth==12.1
-pyobjc-framework-CoreData==12.1
-pyobjc-framework-CoreHaptics==12.1
-pyobjc-framework-CoreLocation==12.1
-pyobjc-framework-CoreMedia==12.1
-pyobjc-framework-CoreMediaIO==12.1
-pyobjc-framework-CoreMIDI==12.1
-pyobjc-framework-CoreML==12.1
-pyobjc-framework-CoreMotion==12.1
-pyobjc-framework-CoreServices==12.1
-pyobjc-framework-CoreSpotlight==12.1
-pyobjc-framework-CoreText==12.1
-pyobjc-framework-CoreWLAN==12.1
-pyobjc-framework-CryptoTokenKit==12.1
-pyobjc-framework-DataDetection==12.1
-pyobjc-framework-DeviceCheck==12.1
-pyobjc-framework-DictionaryServices==12.1
-pyobjc-framework-DiscRecording==12.1
-pyobjc-framework-DiscRecordingUI==12.1
-pyobjc-framework-DiskArbitration==12.1
-pyobjc-framework-DVDPlayback==12.1
-pyobjc-framework-EventKit==12.1
-pyobjc-framework-ExceptionHandling==12.1
-pyobjc-framework-ExecutionPolicy==12.1
-pyobjc-framework-ExtensionKit==12.1
-pyobjc-framework-ExternalAccessory==12.1
-pyobjc-framework-FileProvider==12.1
-pyobjc-framework-FileProviderUI==12.1
-pyobjc-framework-FinderSync==12.1
-pyobjc-framework-FSEvents==12.1
-pyobjc-framework-GameCenter==12.1
-pyobjc-framework-GameController==12.1
-pyobjc-framework-GameKit==12.1
-pyobjc-framework-GameplayKit==12.1
-pyobjc-framework-HealthKit==12.1
-pyobjc-framework-ImageCaptureCore==12.1
-pyobjc-framework-InputMethodKit==12.1
-pyobjc-framework-InstallerPlugins==12.1
-pyobjc-framework-InstantMessage==12.1
-pyobjc-framework-Intents==12.1
-pyobjc-framework-IntentsUI==12.1
-pyobjc-framework-IOBluetooth==12.1
-pyobjc-framework-IOBluetoothUI==12.1
-pyobjc-framework-IOSurface==12.1
-pyobjc-framework-iTunesLibrary==12.1
-pyobjc-framework-KernelManagement==12.1
-pyobjc-framework-LatentSemanticMapping==12.1
-pyobjc-framework-LaunchServices==12.1
-pyobjc-framework-libdispatch==12.1
-pyobjc-framework-libxpc==12.1
-pyobjc-framework-LinkPresentation==12.1
-pyobjc-framework-LocalAuthentication==12.1
-pyobjc-framework-LocalAuthenticationEmbeddedUI==12.1
-pyobjc-framework-MailKit==12.1
-pyobjc-framework-MapKit==12.1
-pyobjc-framework-MediaAccessibility==12.1
-pyobjc-framework-MediaLibrary==12.1
-pyobjc-framework-MediaPlayer==12.1
-pyobjc-framework-MediaToolbox==12.1
-pyobjc-framework-Metal==12.1
-pyobjc-framework-MetalFX==12.1
-pyobjc-framework-MetalKit==12.1
-pyobjc-framework-MetalPerformanceShaders==12.1
-pyobjc-framework-MetalPerformanceShadersGraph==12.1
-pyobjc-framework-MetricKit==12.1
-pyobjc-framework-MLCompute==12.1
-pyobjc-framework-ModelIO==12.1
-pyobjc-framework-MultipeerConnectivity==12.1
-pyobjc-framework-NaturalLanguage==12.1
-pyobjc-framework-NetFS==12.1
-pyobjc-framework-Network==12.1
-pyobjc-framework-NetworkExtension==12.1
-pyobjc-framework-NotificationCenter==12.1
-pyobjc-framework-OpenDirectory==12.1
-pyobjc-framework-OSAKit==12.1
-pyobjc-framework-OSLog==12.1
-pyobjc-framework-PassKit==12.1
-pyobjc-framework-PencilKit==12.1
-pyobjc-framework-PHASE==12.1
-pyobjc-framework-Photos==12.1
-pyobjc-framework-PhotosUI==12.1
-pyobjc-framework-PreferencePanes==12.1
-pyobjc-framework-PushKit==12.1
-pyobjc-framework-Quartz==12.1
-pyobjc-framework-QuickLookThumbnailing==12.1
-pyobjc-framework-ReplayKit==12.1
-pyobjc-framework-SafariServices==12.1
-pyobjc-framework-SafetyKit==12.1
-pyobjc-framework-SceneKit==12.1
-pyobjc-framework-ScreenCaptureKit==12.1
-pyobjc-framework-ScreenSaver==12.1
-pyobjc-framework-ScreenTime==12.1
-pyobjc-framework-ScriptingBridge==12.1
-pyobjc-framework-SearchKit==12.1
-pyobjc-framework-Security==12.1
-pyobjc-framework-SecurityFoundation==12.1
-pyobjc-framework-SecurityInterface==12.1
-pyobjc-framework-ServiceManagement==12.1
-pyobjc-framework-SharedWithYou==12.1
-pyobjc-framework-SharedWithYouCore==12.1
-pyobjc-framework-ShazamKit==12.1
-pyobjc-framework-Social==12.1
-pyobjc-framework-SoundAnalysis==12.1
-pyobjc-framework-Speech==12.1
-pyobjc-framework-SpriteKit==12.1
-pyobjc-framework-StoreKit==12.1
-pyobjc-framework-SyncServices==12.1
-pyobjc-framework-SystemConfiguration==12.1
-pyobjc-framework-SystemExtensions==12.1
-pyobjc-framework-ThreadNetwork==12.1
-pyobjc-framework-UniformTypeIdentifiers==12.1
-pyobjc-framework-UserNotifications==12.1
-pyobjc-framework-UserNotificationsUI==12.1
-pyobjc-framework-VideoSubscriberAccount==12.1
-pyobjc-framework-VideoToolbox==12.1
-pyobjc-framework-Virtualization==12.1
-pyobjc-framework-Vision==12.1
-pyobjc-framework-WebKit==12.1
-pyparsing==3.3.2
-python-dateutil==2.9.0.post0
-python-dotenv==1.2.1
-pyttsx3==2.99
-pytz==2025.2
-referencing==0.37.0
-regex==2026.2.28
-requests==2.32.5
-rpds-py==0.30.0
-setuptools==80.9.0
-six==1.17.0
-smmap==5.0.2
-SpeechRecognition==3.14.5
-standard-aifc==3.13.0
-standard-chunk==3.13.0
-streamlit==1.54.0
-tabulate==0.9.0
-tenacity==9.1.4
-toml==0.10.2
-tornado==6.5.4
-tqdm==4.67.3
-typing-inspection==0.4.2
-typing_extensions==4.15.0
-tzdata==2025.3
-uritemplate==4.2.0
-urllib3==2.6.3
-Werkzeug==3.1.5
-yarl==1.22.0
+March 2, 2026 at 3:38 PM
+failed
+1ecc920
+Update video_fetcher.py
+
+Rollback
+
+All logs
+Search
+Search
+
+Live tail
+
+
+
+==> Common ways to troubleshoot your deploy: https://render.com/docs/troubleshooting-deploys
+==> Build failed 😞
+pip._vendor.packaging.version.InvalidVersion: Invalid version: '6.8.0-1047-aws'
+    raise InvalidVersion(f"Invalid version: {version!r}")
+  File "/opt/render/project/src/.venv/lib/python3.14/site-packages/pip/_vendor/packaging/version.py", line 202, in __init__
+    version = Version(version)
+  File "/opt/render/project/src/.venv/lib/python3.14/site-packages/pip/_vendor/packaging/specifiers.py", line 28, in _coerce_version
+    normalized_item = _coerce_version(item)
+  File "/opt/render/project/src/.venv/lib/python3.14/site-packages/pip/_vendor/packaging/specifiers.py", line 552, in contains
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+    return spec.contains(lhs, prereleases=True)
+  File "/opt/render/project/src/.venv/lib/python3.14/site-packages/pip/_vendor/packaging/markers.py", line 187, in _eval_op
+                      ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+    groups[-1].append(_eval_op(lhs_value, op, rhs_value))
+  File "/opt/render/project/src/.venv/lib/python3.14/site-packages/pip/_vendor/packaging/markers.py", line 239, in _evaluate_markers
+    )
+        self._markers, _repair_python_full_version(current_environment)
+    return _evaluate_markers(
+  File "/opt/render/project/src/.venv/lib/python3.14/site-packages/pip/_vendor/packaging/markers.py", line 347, in evaluate
+             ~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+    elif any(req.marker.evaluate(context) for context in contexts):
+  File "/opt/render/project/src/.venv/lib/python3.14/site-packages/pip/_internal/metadata/importlib/_dists.py", line 228, in <genexpr>
+         ^^^
+    elif any(req.marker.evaluate(context) for context in contexts):
+  File "/opt/render/project/src/.venv/lib/python3.14/site-packages/pip/_internal/metadata/importlib/_dists.py", line 228, in iter_dependencies
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    list(dist.iter_dependencies(list(dist.iter_provided_extras())))
+  File "/opt/render/project/src/.venv/lib/python3.14/site-packages/pip/_internal/resolution/resolvelib/candidates.py", line 232, in _check_metadata_consistency
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+    self._check_metadata_consistency(dist)
+  File "/opt/render/project/src/.venv/lib/python3.14/site-packages/pip/_internal/resolution/resolvelib/candidates.py", line 260, in _prepare
+                ~~~~~~~~~~~~~^^
+    self.dist = self._prepare()
+  File "/opt/render/project/src/.venv/lib/python3.14/site-packages/pip/_internal/resolution/resolvelib/candidates.py", line 161, in __init__
+    ^
+    )
+        ^^^^^^^^^^^^^^^^
+        version=version,
+    ...<4 lines>...
+        ^^^^^^^^^^
+        link=link,
+    ~~~~~~~~~~~~~~~~^
+    super().__init__(
+  File "/opt/render/project/src/.venv/lib/python3.14/site-packages/pip/_internal/resolution/resolvelib/candidates.py", line 318, in __init__
+    ^
+    )
+        ^^^^^^^^^^^^^^^^
+        version=version,
+    ...<3 lines>...
+        ^^^^^
+        link,
+                                       ~~~~~~~~~~~~~^
+    self._link_candidate_cache[link] = LinkCandidate(
+  File "/opt/render/project/src/.venv/lib/python3.14/site-packages/pip/_internal/resolution/resolvelib/factory.py", line 226, in _make_base_candidate_from_link
+    ^
+    )
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        link, template, name, version
+                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+    base: BaseCandidate | None = self._make_base_candidate_from_link(
+  File "/opt/render/project/src/.venv/lib/python3.14/site-packages/pip/_internal/resolution/resolvelib/factory.py", line 180, in _make_candidate_from_link
+    candidate = func()
+  File "/opt/render/project/src/.venv/lib/python3.14/site-packages/pip/_internal/resolution/resolvelib/found_candidates.py", line 39, in _iter_built
+                       ^^^^^^^^
+    return (c for c in iterator if id(c) not in self._incompatible_ids)
+  File "/opt/render/project/src/.venv/lib/python3.14/site-packages/pip/_internal/resolution/resolvelib/found_candidates.py", line 149, in <genexpr>
+                 ~~~^^^^^^
+    self._bool = any(self)
+  File "/opt/render/project/src/.venv/lib/python3.14/site-packages/pip/_internal/resolution/resolvelib/found_candidates.py", line 165, in __bool__
+    return bool(self._sequence)
+  File "/opt/render/project/src/.venv/lib/python3.14/site-packages/pip/_vendor/resolvelib/structs.py", line 194, in __bool__
+           ^^^^^^^^^^^^^^^^^^^^
+    if not criterion.candidates:
+  File "/opt/render/project/src/.venv/lib/python3.14/site-packages/pip/_vendor/resolvelib/resolvers/resolution.py", line 150, in _add_to_criteria
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    self._add_to_criteria(self.state.criteria, r, parent=None)
+  File "/opt/render/project/src/.venv/lib/python3.14/site-packages/pip/_vendor/resolvelib/resolvers/resolution.py", line 434, in resolve
+    state = resolution.resolve(requirements, max_rounds=max_rounds)
+  File "/opt/render/project/src/.venv/lib/python3.14/site-packages/pip/_vendor/resolvelib/resolvers/resolution.py", line 601, in resolve
+    ^
+    )
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        collected.requirements, max_rounds=limit_how_complex_resolution_can_be
+                            ~~~~~~~~~~~~~~~~^
+    result = self._result = resolver.resolve(
+  File "/opt/render/project/src/.venv/lib/python3.14/site-packages/pip/_internal/resolution/resolvelib/resolver.py", line 99, in resolve
+    )
+        reqs, check_supported_wheels=not options.target_dir
+    requirement_set = resolver.resolve(
+  File "/opt/render/project/src/.venv/lib/python3.14/site-packages/pip/_internal/commands/install.py", line 388, in run
+    return func(self, options, args)
+  File "/opt/render/project/src/.venv/lib/python3.14/site-packages/pip/_internal/cli/req_command.py", line 85, in wrapper
+           ~~~~~~~~^^^^^^^^^^^^^^^
+    return self.run(options, args)
+  File "/opt/render/project/src/.venv/lib/python3.14/site-packages/pip/_internal/cli/base_command.py", line 98, in _inner_run
+    status = _inner_run()
+  File "/opt/render/project/src/.venv/lib/python3.14/site-packages/pip/_internal/cli/base_command.py", line 107, in _run_wrapper
+Traceback (most recent call last):
+ERROR: Exception:
+[notice] To update, run: pip install --upgrade pip
+[notice] A new release of pip is available: 25.3 -> 26.0.1
+  Downloading pyobjc-12.1-py3-none-any.whl.metadata (26 kB)
+Collecting pyobjc==12.1 (from -r requirements.txt (line 62))
+  Downloading pyjokes-0.8.3-py3-none-any.whl.metadata (3.4 kB)
+Collecting pyjokes==0.8.3 (from -r requirements.txt (line 61))
+  Downloading pydeck-0.9.1-py2.py3-none-any.whl.metadata (4.1 kB)
+Collecting pydeck==0.9.1 (from -r requirements.txt (line 60))
+  Downloading pydantic_core-2.41.5-cp314-cp314-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (7.3 kB)
+Collecting pydantic_core==2.41.5 (from -r requirements.txt (line 59))
+  Downloading pydantic-2.12.5-py3-none-any.whl.metadata (90 kB)
+Collecting pydantic==2.12.5 (from -r requirements.txt (line 58))
+  Using cached pycparser-3.0-py3-none-any.whl.metadata (8.2 kB)
+Collecting pycparser==3.0 (from -r requirements.txt (line 57))
+  Preparing metadata (pyproject.toml): finished with status 'done'
+  Preparing metadata (pyproject.toml): started
+  Getting requirements to build wheel: finished with status 'done'
+  Getting requirements to build wheel: started
+  Installing build dependencies: finished with status 'done'
+  Installing build dependencies: started
+  Downloading PyAudio-0.2.14.tar.gz (47 kB)
+Collecting PyAudio==0.2.14 (from -r requirements.txt (line 56))
+  Downloading pyasn1_modules-0.4.2-py3-none-any.whl.metadata (3.5 kB)
+Collecting pyasn1_modules==0.4.2 (from -r requirements.txt (line 55))
+  Downloading pyasn1-0.6.2-py3-none-any.whl.metadata (8.4 kB)
+Collecting pyasn1==0.6.2 (from -r requirements.txt (line 54))
+  Downloading pyarrow-23.0.1-cp314-cp314-manylinux_2_28_x86_64.whl.metadata (3.1 kB)
+Collecting pyarrow==23.0.1 (from -r requirements.txt (line 53))
+  Downloading protobuf-5.29.6-cp38-abi3-manylinux2014_x86_64.whl.metadata (592 bytes)
+Collecting protobuf==5.29.6 (from -r requirements.txt (line 52))
+  Downloading proto_plus-1.27.1-py3-none-any.whl.metadata (2.2 kB)
+Collecting proto-plus==1.27.1 (from -r requirements.txt (line 51))
+  Downloading propcache-0.4.1-cp314-cp314-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (13 kB)
+Collecting propcache==0.4.1 (from -r requirements.txt (line 50))
+  Downloading proglog-0.1.12-py3-none-any.whl.metadata (794 bytes)
+Collecting proglog==0.1.12 (from -r requirements.txt (line 49))
+  Downloading pillow-11.3.0-cp314-cp314-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (9.0 kB)
+Collecting pillow==11.3.0 (from -r requirements.txt (line 48))
+  Downloading pandas-2.3.3-cp314-cp314-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl.metadata (91 kB)
+Collecting pandas==2.3.3 (from -r requirements.txt (line 47))
+  Using cached packaging-26.0-py3-none-any.whl.metadata (3.3 kB)
+Collecting packaging==26.0 (from -r requirements.txt (line 46))
+  Downloading numpy-2.4.2-cp314-cp314-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (6.6 kB)
+Collecting numpy==2.4.2 (from -r requirements.txt (line 45))
+  Downloading nltk-3.9.3-py3-none-any.whl.metadata (3.2 kB)
+Collecting nltk==3.9.3 (from -r requirements.txt (line 44))
+  Downloading narwhals-2.17.0-py3-none-any.whl.metadata (14 kB)
+Collecting narwhals==2.17.0 (from -r requirements.txt (line 43))
+  Downloading multidict-6.7.1-cp314-cp314-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (5.3 kB)
+Collecting multidict==6.7.1 (from -r requirements.txt (line 42))
