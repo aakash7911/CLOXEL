@@ -5,3 +5,5 @@ edge-tts
 requests
 pydantic
 gTTS
+numpy
+moviepy
