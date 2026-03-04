@@ -1,29 +1,27 @@
-import asyncio
+import cloudinary
+import cloudinary.uploader
 import edge_tts
 import os
-import random
+import uuid
 
-def make_audio(text, output_path, voice_id='hi-IN-MadhurNeural'):
-    print(f"🎙️ Generating Voice: {text[:30]}...")
+# Cloudinary configuration (Render ke Environment Variables se uthayega)
+cloudinary.config( 
+  cloud_name = os.environ.get("CLOUDINARY_NAME"), 
+  api_key = os.environ.get("CLOUDINARY_API_KEY"), 
+  api_secret = os.environ.get("CLOUDINARY_API_SECRET") 
+)
+
+async def make_audio_and_get_link(text, filename, voice_id):
+    # 1. Local audio file banayein
+    communicate = edge_tts.Communicate(text, voice_id)
+    await communicate.save(filename)
     
-    async def amain():
-        try:
-            # Random delay taki rate-limit na ho
-            await asyncio.sleep(random.uniform(1.5, 3.0))
-            
-            communicate = edge_tts.Communicate(text, voice_id)
-            await communicate.save(output_path)
-            print(f"✅ Audio saved: {output_path}")
-        except Exception as e:
-            if "403" in str(e):
-                print(f"⚠️ Microsoft ne block kiya (403). Changing strategy...")
-                # Yahan hum retry limit badha sakte hain ya pause le sakte hain
-            raise e
-
-    try:
-        asyncio.run(amain())
-        if os.path.exists(output_path):
-            return output_path
-    except Exception as e:
-        print(f"❌ Audio Engine Failed Final: {e}")
-        return None
+    # 2. Cloudinary par upload karein
+    response = cloudinary.uploader.upload(filename, resource_type="video")
+    
+    # 3. Local file delete karein
+    if os.path.exists(filename):
+        os.remove(filename)
+        
+    # 4. Direct URL wapas bhejien
+    return response['secure_url']
