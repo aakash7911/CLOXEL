@@ -1,9 +1,11 @@
 fastapi
+
 uvicorn
+
 cloudinary
+
 edge-tts
+
 requests
+
 pydantic
-gTTS
-numpy
-moviepy
